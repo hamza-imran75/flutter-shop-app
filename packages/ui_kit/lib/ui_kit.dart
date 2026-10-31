@@ -11,6 +11,7 @@ export 'src/widgets/app_button.dart';
 export 'src/widgets/app_icon_button.dart';
 export 'src/widgets/app_spinner.dart';
 export 'src/widgets/pressable.dart';
+export 'src/widgets/quantity_stepper.dart';
 export 'src/widgets/app_text_field.dart';
 export 'src/widgets/fade_slide_in.dart';
 export 'src/widgets/fade_switcher.dart';
