@@ -1,6 +1,8 @@
 import 'package:flutter/widgets.dart';
 import 'package:ui_kit/ui_kit.dart';
 
+import '../../../cart/presentation/widgets/cart_button.dart';
+
 class ProductsHeader extends StatelessWidget {
   const ProductsHeader({
     super.key,
@@ -36,6 +38,7 @@ class ProductsHeader extends StatelessWidget {
               ),
             ),
           ),
+          const CartButton(),
           AppIconButton(
             icon: LucideIcons.logOut,
             semanticLabel: 'Sign out',

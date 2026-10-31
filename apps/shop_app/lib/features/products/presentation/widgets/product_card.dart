@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:ui_kit/ui_kit.dart';
 
+import '../../../cart/presentation/widgets/in_cart_chip.dart';
 import '../../domain/product.dart';
 import 'price_text.dart';
 import 'product_image.dart';
@@ -43,6 +44,11 @@ class ProductCard extends StatelessWidget {
                           url: product.cover,
                           radius: AppRadii.l - 2,
                         ),
+                      ),
+                      Positioned(
+                        bottom: 8,
+                        left: 8,
+                        child: InCartChip(productId: product.id),
                       ),
                       if (product.hasDiscount)
                         Positioned(

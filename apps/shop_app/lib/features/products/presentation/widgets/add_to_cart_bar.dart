@@ -1,36 +1,27 @@
+import 'package:context_watch/context_watch.dart';
 import 'package:flutter/widgets.dart';
 import 'package:ui_kit/ui_kit.dart';
 
-enum _CartStatus { idle, adding, added }
+import '../../../../core/provider_scope.dart';
+import '../../../cart/cart_providers.dart';
+import '../../domain/product.dart';
+import 'price_text.dart';
 
-/// Sticky call to action. The cart itself is out of scope, so this only plays
-/// the idle, adding and added states.
-class AddToCartBar extends StatefulWidget {
-  const AddToCartBar({super.key, required this.inStock});
+/// Sticky bottom bar. An "Add to cart" button swaps for a quantity stepper
+/// once the product is in the cart, and back when the quantity reaches zero.
+class AddToCartBar extends StatelessWidget {
+  const AddToCartBar({super.key, required this.product});
 
-  final bool inStock;
-
-  @override
-  State<AddToCartBar> createState() => _AddToCartBarState();
-}
-
-class _AddToCartBarState extends State<AddToCartBar> {
-  _CartStatus _status = _CartStatus.idle;
-
-  Future<void> _onPressed() async {
-    if (_status == _CartStatus.added) {
-      setState(() => _status = _CartStatus.idle);
-      return;
-    }
-    setState(() => _status = _CartStatus.adding);
-    await Future<void>.delayed(const Duration(milliseconds: 800));
-    if (mounted) setState(() => _status = _CartStatus.added);
-  }
+  final Product product;
 
   @override
   Widget build(BuildContext context) {
     final bottom = MediaQuery.paddingOf(context).bottom;
-    final added = _status == _CartStatus.added;
+    final quantity = context
+        .read(cartQuantityProvider(product.id))
+        .watch(context);
+    final cart = context.read(cartRepositoryProvider);
+    final reduce = MediaQuery.maybeDisableAnimationsOf(context) ?? false;
 
     return DecoratedBox(
       decoration: const BoxDecoration(
@@ -48,17 +39,109 @@ class _AddToCartBarState extends State<AddToCartBar> {
           AppSpacing.xl,
           AppSpacing.m + bottom,
         ),
-        child: AppButton(
-          label: !widget.inStock
-              ? 'Out of stock'
-              : added
-              ? 'Added to cart'
-              : 'Add to cart',
-          icon: added ? LucideIcons.check : LucideIcons.shoppingCart,
-          loading: _status == _CartStatus.adding,
-          onPressed: widget.inStock ? _onPressed : null,
+        child: AnimatedSize(
+          duration: reduce ? Duration.zero : const Duration(milliseconds: 220),
+          curve: Curves.easeOut,
+          child: AnimatedSwitcher(
+            duration: reduce
+                ? Duration.zero
+                : const Duration(milliseconds: 240),
+            transitionBuilder: (child, animation) => FadeTransition(
+              opacity: animation,
+              child: ScaleTransition(
+                scale: Tween(begin: 0.96, end: 1.0).animate(animation),
+                child: child,
+              ),
+            ),
+            child: quantity == 0
+                ? AppButton(
+                    key: const ValueKey('add'),
+                    label: product.stock > 0 ? 'Add to cart' : 'Out of stock',
+                    icon: LucideIcons.shoppingCart,
+                    onPressed: product.stock > 0
+                        ? () => cart.add(product)
+                        : null,
+                  )
+                : _InCart(
+                    key: const ValueKey('stepper'),
+                    product: product,
+                    quantity: quantity,
+                    onChanged: (q) => cart.setQuantity(product.id, q),
+                  ),
+          ),
         ),
       ),
+    );
+  }
+}
+
+class _InCart extends StatelessWidget {
+  const _InCart({
+    super.key,
+    required this.product,
+    required this.quantity,
+    required this.onChanged,
+  });
+
+  final Product product;
+  final int quantity;
+  final ValueChanged<int> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final unit = product.hasDiscount ? product.discountedPrice : product.price;
+    return Row(
+      children: [
+        Expanded(
+          child: Semantics(
+            liveRegion: true,
+            container: true,
+            label: 'Added to cart. $quantity in cart',
+            excludeSemantics: true,
+            child: Row(
+              children: [
+                Container(
+                  width: 32,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: AppColors.success.withValues(alpha: 0.14),
+                    border: Border.all(
+                      color: AppColors.success.withValues(alpha: 0.45),
+                    ),
+                  ),
+                  child: const Center(
+                    child: AppIcon(
+                      LucideIcons.check,
+                      size: 16,
+                      color: AppColors.success,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.m),
+                Flexible(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      AppText('In cart', style: AppTextStyles.bodyStrong),
+                      AppText(
+                        '${formatPrice(unit)} each',
+                        style: AppTextStyles.caption,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        QuantityStepper(
+          quantity: quantity,
+          canIncrement: quantity < product.stock,
+          onIncrement: () => onChanged(quantity + 1),
+          onDecrement: () => onChanged(quantity - 1),
+        ),
+      ],
     );
   }
 }
