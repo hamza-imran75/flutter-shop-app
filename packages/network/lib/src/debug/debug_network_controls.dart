@@ -17,6 +17,7 @@ class DebugNetworkControls {
   int _failNext = 0;
   bool _unauthorizeNext = false;
 
+  /// Counts authenticated requests only, so login still goes through.
   void failNextRequests(int count) => _failNext = count;
 
   void unauthorizeNextRequest() => _unauthorizeNext = true;
@@ -59,8 +60,9 @@ class DebugNetworkInterceptor extends Interceptor {
       _controls._unauthorizeNext = false;
       return _fail(options, handler, 401);
     }
-    if (_controls.failAllWith500.value || _controls._failNext > 0) {
-      if (_controls._failNext > 0) _controls._failNext--;
+    final failOnce = isAuthenticated && _controls._failNext > 0;
+    if (failOnce) _controls._failNext--;
+    if (failOnce || _controls.failAllWith500.value) {
       return _fail(options, handler, 500);
     }
     handler.next(options);

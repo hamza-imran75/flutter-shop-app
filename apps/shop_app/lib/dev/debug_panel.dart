@@ -79,18 +79,18 @@ class _PanelSheet extends ConsumerWidget {
                 ),
                 const _Section('Server'),
                 _Action(
-                  label: 'Fail the next request (500)',
+                  label: 'Fail the next data request (500)',
                   description: 'Retry recovers on the second attempt.',
                   onTap: () => controls.failNextRequests(1),
                 ),
                 _Action(
-                  label: 'Fail the next 4 requests (500)',
+                  label: 'Fail the next 4 data requests (500)',
                   description: 'Exhausts the retries, then shows an error.',
                   onTap: () => controls.failNextRequests(4),
                 ),
                 _Toggle(
                   label: 'Fail every request (500)',
-                  description: 'Stays on until switched off.',
+                  description: 'Includes login. Stays on until switched off.',
                   value: controls.failAllWith500,
                 ),
                 const _Section('Session'),
