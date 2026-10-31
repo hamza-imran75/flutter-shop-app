@@ -29,8 +29,13 @@ connectivity -> auth -> log -> debug -> retry -> refresh
 
 Retry handles connection errors, timeouts and 5xx for idempotent requests, with backoff and jitter. It ignores 401. Refresh handles only 401. A connection retry therefore never triggers a refresh, and a refresh replay happens at most once. The refresh call uses its own Dio, so it cannot recurse.
 
+## Extras
+
+- **Accessibility.** Buttons, fields, the quantity stepper and icon-only buttons carry labels and states. Each product card reads as one item, such as "title, brand, price, rating, in cart". Loading, error, empty and offline states are announced. Tap targets are at least 44 points. Layouts hold up at large text sizes, secondary text meets 4.5:1 contrast, and reduced motion skips the Hero, slide-ins and shimmer.
+- **Cart.** Add to cart from the detail page, an "In cart" chip on list cards, and a cart screen with a quantity stepper and a checkout confirmation. It is local only.
+
 ## Trade-offs and next steps
 
 - dummyjson answers 500, not 401, for a tampered JWT. The app treats that as a server error.
 - The access token is refreshed on 401, not ahead of expiry. Decoding `exp` would save one failed request.
-- The cart is not persisted. Next steps would be a persisted cart, an offline cache for the list and integration tests against a mock server.
+- The cart is not persisted.
