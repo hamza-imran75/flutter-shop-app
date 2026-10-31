@@ -1,9 +1,9 @@
 import 'package:flutter/widgets.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ui_kit/ui_kit.dart';
 
 import 'package:context_watch/context_watch.dart';
 
-import '../../../../core/provider_scope.dart';
 import '../../../cart/cart_providers.dart';
 import '../../../cart/presentation/widgets/in_cart_chip.dart';
 import '../../domain/product.dart';
@@ -12,17 +12,15 @@ import 'product_hero.dart';
 import 'product_image.dart';
 import 'rating_label.dart';
 
-class ProductCard extends StatelessWidget {
+class ProductCard extends ConsumerWidget {
   const ProductCard({super.key, required this.product, required this.onTap});
 
   final Product product;
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) {
-    final quantity = context
-        .read(cartQuantityProvider(product.id))
-        .watch(context);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final quantity = ref.watch(cartQuantityProvider(product.id)).watch(context);
     return Semantics(
       button: true,
       label: _label(quantity),

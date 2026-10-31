@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:riverpod/riverpod.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/derived_listenable.dart';
 import 'domain/cart_repository.dart';

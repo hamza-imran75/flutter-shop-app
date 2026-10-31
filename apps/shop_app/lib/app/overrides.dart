@@ -1,4 +1,4 @@
-import 'package:riverpod/misc.dart' show Override;
+import 'package:flutter_riverpod/misc.dart' show Override;
 
 import '../core/core_providers.dart';
 import '../dev/scenario_panel.dart';

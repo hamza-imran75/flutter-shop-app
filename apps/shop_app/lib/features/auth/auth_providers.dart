@@ -1,4 +1,4 @@
-import 'package:riverpod/riverpod.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'domain/auth_repository.dart';
 import 'presentation/auth_controller.dart';

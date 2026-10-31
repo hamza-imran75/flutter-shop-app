@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:riverpod/riverpod.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// A listenable of `select(source.value)` that notifies only when the selected
 /// value changes, so a widget watching it ignores unrelated source updates.

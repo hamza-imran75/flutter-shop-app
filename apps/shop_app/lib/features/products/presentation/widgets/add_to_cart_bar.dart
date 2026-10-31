@@ -1,26 +1,24 @@
 import 'package:context_watch/context_watch.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ui_kit/ui_kit.dart';
 
-import '../../../../core/provider_scope.dart';
 import '../../../cart/cart_providers.dart';
 import '../../domain/product.dart';
 import 'price_text.dart';
 
 /// Sticky bottom bar. An "Add to cart" button swaps for a quantity stepper
 /// once the product is in the cart, and back when the quantity reaches zero.
-class AddToCartBar extends StatelessWidget {
+class AddToCartBar extends ConsumerWidget {
   const AddToCartBar({super.key, required this.product});
 
   final Product product;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final bottom = MediaQuery.paddingOf(context).bottom;
-    final quantity = context
-        .read(cartQuantityProvider(product.id))
-        .watch(context);
-    final cart = context.read(cartRepositoryProvider);
+    final quantity = ref.watch(cartQuantityProvider(product.id)).watch(context);
+    final cart = ref.read(cartRepositoryProvider);
     final reduce = context.reduceMotion;
 
     return DecoratedBox(

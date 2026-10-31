@@ -26,7 +26,7 @@ To see the offline view, start with `FAKE_SCENARIO=error`, open the panel, choos
 ```
 apps/shop_app/lib
   app/        shell, auth gate, route transitions, the override list
-  core/       Failure hierarchy, ConnectivityStatus, provider scope, shared helpers
+  core/       Failure hierarchy, ConnectivityStatus, shared helpers
   dev/        FakeScenario controller and the panel (delete in phase 2)
   features/
     auth/     domain, data (fake), presentation
@@ -38,9 +38,7 @@ packages/ui_kit   tokens, AppButton, text field, pull to refresh, skeleton,
 
 ## Decisions
 
-**State management.** `riverpod` (pure Dart) injects dependencies and owns controller lifetimes. `context_watch` watches state in `build`. Controllers are `ValueNotifier`s holding sealed state classes, and widgets call `.watch(context)` on them. Riverpod never rebuilds widgets, and context_watch never creates objects, so no state is observed twice.
-
-**Why not flutter_riverpod.** Version 3.4.3 imports `package:flutter/material.dart`, which breaks the no-Material rule even transitively. `core/provider_scope.dart` is a small `ProviderScope` and `ProviderBuilder` bridge over the pure package. `ProviderBuilder` keeps an auto-dispose controller alive for the life of its screen.
+**State management.** `flutter_riverpod` injects dependencies and owns controller lifetimes. `context_watch` watches state in `build`. Controllers are `ValueNotifier`s holding sealed state classes, and widgets call `.watch(context)` on them. Riverpod never rebuilds widgets, and context_watch never creates objects, so no state is observed twice.
 
 **Repositories behind providers.** Screens and controllers see `AuthRepository`, `ProductRepository` and `CartRepository`. `app/overrides.dart` is the only file that names an implementation.
 

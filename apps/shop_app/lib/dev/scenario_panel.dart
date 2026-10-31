@@ -1,8 +1,8 @@
 import 'package:context_watch/context_watch.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ui_kit/ui_kit.dart';
 
-import '../core/provider_scope.dart';
 import 'fake_scenario.dart';
 import 'scenario_providers.dart';
 
@@ -31,12 +31,12 @@ void showScenarioPanel(BuildContext context) {
   );
 }
 
-class _PanelSheet extends StatelessWidget {
+class _PanelSheet extends ConsumerWidget {
   const _PanelSheet();
 
   @override
-  Widget build(BuildContext context) {
-    final scenario = context.read(scenarioControllerProvider);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final scenario = ref.watch(scenarioControllerProvider);
     final current = scenario.watch(context);
     final bottom = MediaQuery.paddingOf(context).bottom;
     return Align(
