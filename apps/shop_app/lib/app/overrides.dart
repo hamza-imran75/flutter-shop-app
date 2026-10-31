@@ -1,6 +1,7 @@
 import 'package:riverpod/misc.dart' show Override;
 
 import '../core/core_providers.dart';
+import '../dev/scenario_panel.dart';
 import '../dev/scenario_providers.dart';
 import '../features/auth/auth_providers.dart';
 import '../features/cart/cart_providers.dart';
@@ -13,6 +14,7 @@ import '../features/products/products_providers.dart';
 /// replaces this list with the real network, storage and connectivity.
 List<Override> appOverrides() => [
   connectivityStatusProvider.overrideWith(fakeConnectivity),
+  devPanelLauncherProvider.overrideWithValue(showScenarioPanel),
   authRepositoryProvider.overrideWith(
     (ref) =>
         FakeAuthRepository(connectivity: ref.watch(connectivityStatusProvider)),
