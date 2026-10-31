@@ -5,3 +5,5 @@ environment:
 workspace:
   - apps/shop_app
   - packages/ui_kit
+  - packages/dummyjson_api
+  - packages/network

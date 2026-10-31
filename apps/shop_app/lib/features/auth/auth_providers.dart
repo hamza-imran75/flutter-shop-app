@@ -1,5 +1,6 @@
-import 'package:riverpod/riverpod.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/core_providers.dart';
 import 'domain/auth_repository.dart';
 import 'presentation/auth_controller.dart';
 import 'presentation/login_controller.dart';
@@ -10,8 +11,10 @@ final authRepositoryProvider = Provider<AuthRepository>(
 );
 
 final authControllerProvider = Provider<AuthController>((ref) {
-  final controller = AuthController(ref.watch(authRepositoryProvider))
-    ..restore();
+  final controller = AuthController(
+    ref.watch(authRepositoryProvider),
+    ref.watch(connectivityStatusProvider),
+  )..restore();
   ref.onDispose(controller.dispose);
   return controller;
 });

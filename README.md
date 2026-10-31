@@ -1,60 +1,41 @@
 # Shop app
 
-A Flutter shop client for https://dummyjson.com. It has a login, a paged product list, a product detail page and a local cart. The app uses the widgets layer only. There is no Material and no Cupertino anywhere, and `tools/check_no_material.sh` enforces that.
-
-Phase 1 (this branch) is UI and state against fake repositories. Phase 2 swaps in the real network layer without touching screens or controllers.
-
-## Run
+A Flutter client for https://dummyjson.com with login, a paged product list, a product detail page and a local cart. It uses the real API, keeps the session in secure storage, refreshes expired tokens and waits out lost connectivity.
 
 ```sh
 flutter pub get
-flutter run                                  # normal scenario
-flutter run --dart-define=FAKE_SCENARIO=slowLoading
-tools/check_no_material.sh                   # sources and pubspecs
+cd apps/shop_app && flutter run
 ```
 
-Scenarios for `FAKE_SCENARIO`: `normal`, `slowLoading`, `error`, `empty`, `offline`, `failLoadMore`. Log in with `emilys` / `emilyspass`. Any other credentials show an inline error.
-
-## Developer panel
-
-Long-press the app title ("Discover" on the list, "Welcome back" on login) to open a bottom sheet. Pick a scenario to change how the fake backend behaves while the app runs. "Connectivity restored" ends the offline scenario, and anything waiting for the network resumes by itself.
-
-To see the offline view, start with `FAKE_SCENARIO=error`, open the panel, choose Offline, then tap "Try again". Choose "Connectivity restored" and the list loads.
-
-## Structure
-
-```
-apps/shop_app/lib
-  app/        shell, auth gate, route transitions, the override list
-  core/       Failure hierarchy, ConnectivityStatus, provider scope, shared helpers
-  dev/        FakeScenario controller and the panel (delete in phase 2)
-  features/
-    auth/     domain, data (fake), presentation
-    products/ domain, data (fake + bundled catalog), presentation
-    cart/     domain, data (in memory), presentation
-packages/ui_kit   tokens, AppButton, text field, pull to refresh, skeleton,
-                  status and offline views, quantity stepper
-```
+Log in with `emilys` / `emilyspass`. Debug builds log one `[net]` line per request, retry and refresh. Long-press the title on the login or list screen to open a debug panel that forces offline, 500s and 401s.
 
 ## Decisions
 
-**State management.** `riverpod` (pure Dart) injects dependencies and owns controller lifetimes. `context_watch` watches state in `build`. Controllers are `ValueNotifier`s holding sealed state classes, and widgets call `.watch(context)` on them. Riverpod never rebuilds widgets, and context_watch never creates objects, so no state is observed twice.
+- **Monorepo.** `apps/shop_app` is the app. `packages/network` (Dio, interceptors, token store, connectivity) knows nothing about the app. `packages/dummyjson_api` is generated. `packages/ui_kit` holds the design tokens and widgets.
+- **Generated API, thin repositories.** The client comes from dummyjson's OpenAPI spec (`tools/generate_api.sh`). Only `features/*/data/api_*` and `app/overrides.dart` import it. Screens and controllers see repository interfaces and domain models.
+- **Riverpod plus context_watch.** `flutter_riverpod` injects dependencies and owns controller lifetimes. Controllers are `ValueNotifier`s holding sealed states, and widgets read them with `context_watch`. Nothing is observed by both.
+- **Tokens in `flutter_secure_storage`.** Keychain on iOS, encrypted storage on Android. At launch the stored session is validated with `GET /auth/me`.
+- **Refresh on 401.** One refresh is shared by concurrent requests, then the failed request is replayed once. If the refresh is rejected, the tokens are cleared and the app returns to login. A refresh that fails because of the network does not log the user out.
+- **`/auth/products`, not `/products`.** The public route never returns 401, which would make the refresh flow dead code. The authenticated route does.
+- **Offline and retries live in the Dio chain,** so any screen gets them. While offline, requests fail fast and the screen shows the offline view with a spinner, then resumes by itself when connectivity returns. Connectivity combines `connectivity_plus` with a real reachability probe.
+- **No Material widgets,** so the UI is custom. A plain `Navigator` is enough for four screens with no deep links.
+- **Cart is local.** dummyjson carts are fake, so a server cart would add nothing.
 
-**Why not flutter_riverpod.** Version 3.4.3 imports `package:flutter/material.dart`, which breaks the no-Material rule even transitively. `core/provider_scope.dart` is a small `ProviderScope` and `ProviderBuilder` bridge over the pure package. `ProviderBuilder` keeps an auto-dispose controller alive for the life of its screen.
+## Interceptor order
 
-**Repositories behind providers.** Screens and controllers see `AuthRepository`, `ProductRepository` and `CartRepository`. `app/overrides.dart` is the only file that names an implementation.
+```
+connectivity -> auth -> log -> debug -> retry -> refresh
+```
 
-**Typed failures.** `Failure` is sealed: offline, server, unauthorized, invalid credentials, unknown. Controllers emit sealed states such as `ProductListLoading`, `ProductListData`, `ProductListEmpty` and `ProductListError`. Load-more and refresh errors live inside `ProductListData`, so a failed page never discards the list.
+Retry handles connection errors, timeouts and 5xx for idempotent requests, with backoff and jitter. It ignores 401. Refresh handles only 401. A connection retry therefore never triggers a refresh, and a refresh replay happens at most once. The refresh call uses its own Dio, so it cannot recurse.
 
-**Offline.** `ConnectivityStatus` is an interface in `core/`. `retryWhenOnline` waits for connectivity and then retries, and `OfflineGate` in ui_kit shows the offline view while a screen is loading without a connection.
+## Extras
 
-**Cart.** `Cart` and `CartLine` are immutable. Quantity is capped at stock. `cartQuantityProvider(productId)` derives one listenable per product, so a card or the detail bar rebuilds only when its own quantity changes.
+- **Accessibility.** Buttons, fields, the quantity stepper and icon-only buttons carry labels and states. Each product card reads as one item, such as "title, brand, price, rating, in cart". Loading, error, empty and offline states are announced. Tap targets are at least 44 points. Layouts hold up at large text sizes, secondary text meets 4.5:1 contrast, and reduced motion skips the Hero, slide-ins and shimmer.
+- **Cart.** Add to cart from the detail page, an "In cart" chip on list cards, and a cart screen with a quantity stepper and a checkout confirmation. It is local only.
 
-**Accessibility.** Semantics live in ui_kit (buttons, fields, stepper, status views) so screens get them for free. Tap targets are at least 44 points, status changes use live regions, the product grid grows with the text scale, and reduced motion removes the Hero, slide-ins, shimmer and route transitions.
+## Trade-offs and next steps
 
-## Phase 2 checklist
-
-1. Add Dio and the generated API client, then implement the three repositories in `features/*/data`.
-2. Store tokens securely and add the 401 refresh interceptor.
-3. Implement `ConnectivityStatus` with real connectivity and override `connectivityStatusProvider`.
-4. Replace the fake entries in `app/overrides.dart` and delete `dev/` and `features/*/data/fake_*`.
+- dummyjson answers 500, not 401, for a tampered JWT. The app treats that as a server error.
+- The access token is refreshed on 401, not ahead of expiry. Decoding `exp` would save one failed request.
+- The cart is not persisted.

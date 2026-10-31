@@ -1,33 +1,81 @@
-import 'package:riverpod/misc.dart' show Override;
+import 'package:dummyjson_api/dummyjson_api.dart' show AuthApi;
+import 'package:flutter/foundation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart' show Override;
+import 'package:network/network.dart';
 
 import '../core/core_providers.dart';
-import '../dev/scenario_panel.dart';
-import '../dev/scenario_providers.dart';
+import '../dev/debug_panel.dart';
+import '../dev/debug_providers.dart';
+import '../core/service_connectivity_status.dart';
 import '../features/auth/auth_providers.dart';
+import '../features/auth/data/api_auth_repository.dart';
+import '../features/auth/data/api_token_refresher.dart';
 import '../features/cart/cart_providers.dart';
 import '../features/cart/data/in_memory_cart_repository.dart';
-import '../features/auth/data/fake_auth_repository.dart';
-import '../features/products/data/fake_product_repository.dart';
+import '../features/products/data/api_product_repository.dart';
 import '../features/products/products_providers.dart';
+import 'app_config.dart';
 
-/// The only place that knows which implementations back the app. Phase 2
-/// replaces this list with the real network, storage and connectivity.
+final _tokenStoreProvider = Provider<TokenStore>((_) => SecureTokenStore());
+
+final _sessionEventsProvider = Provider<SessionEvents>((ref) {
+  final events = SessionEvents();
+  ref.onDispose(events.dispose);
+  return events;
+});
+
+final _connectivityServiceProvider = Provider<ConnectivityService>((ref) {
+  final service = ConnectivityService.http(
+    baseUrl: AppConfig.apiBaseUrl,
+    forceOffline: ref.watch(debugNetworkControlsProvider)?.forceOffline,
+  );
+  ref.onDispose(service.dispose);
+  return service;
+});
+
+final _authApiProvider = Provider<AuthApi>((ref) {
+  final dio = createDio(
+    NetworkConfig(
+      baseUrl: AppConfig.apiBaseUrl,
+      tokens: ref.watch(_tokenStoreProvider),
+      connectivity: ref.watch(_connectivityServiceProvider),
+      sessionEvents: ref.watch(_sessionEventsProvider),
+      refresh: refreshTokens,
+      log: kDebugMode ? (message) => debugPrint('[net] $message') : null,
+      debugControls: ref.watch(debugNetworkControlsProvider),
+    ),
+  );
+  return AuthApi(dio);
+});
+
+/// The only place that knows which implementations back the app.
 List<Override> appOverrides() => [
-  connectivityStatusProvider.overrideWith(fakeConnectivity),
-  devPanelLauncherProvider.overrideWithValue(showScenarioPanel),
+  if (kDebugMode) ...[
+    debugNetworkControlsProvider.overrideWith((ref) {
+      final controls = DebugNetworkControls(ref.watch(_tokenStoreProvider));
+      ref.onDispose(controls.dispose);
+      return controls;
+    }),
+    devPanelLauncherProvider.overrideWithValue(showDebugPanel),
+  ],
+  connectivityStatusProvider.overrideWith(
+    (ref) => ServiceConnectivityStatus(ref.watch(_connectivityServiceProvider)),
+  ),
   authRepositoryProvider.overrideWith(
-    (ref) =>
-        FakeAuthRepository(connectivity: ref.watch(connectivityStatusProvider)),
+    (ref) => ApiAuthRepository(
+      api: ref.watch(_authApiProvider),
+      tokens: ref.watch(_tokenStoreProvider),
+      events: ref.watch(_sessionEventsProvider),
+      accessTokenMins: AppConfig.accessTokenMins,
+    ),
+  ),
+  productRepositoryProvider.overrideWith(
+    (ref) => ApiProductRepository(ref.watch(_authApiProvider)),
   ),
   cartRepositoryProvider.overrideWith((ref) {
     final repository = InMemoryCartRepository();
     ref.onDispose(repository.dispose);
     return repository;
   }),
-  productRepositoryProvider.overrideWith(
-    (ref) => FakeProductRepository(
-      scenario: ref.watch(scenarioControllerProvider),
-      connectivity: ref.watch(connectivityStatusProvider),
-    ),
-  ),
 ];

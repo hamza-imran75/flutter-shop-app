@@ -1,19 +1,19 @@
 import 'package:context_watch/context_watch.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ui_kit/ui_kit.dart';
 
 import '../../../../app/app_route.dart';
-import '../../../../core/provider_scope.dart';
 import '../../cart_providers.dart';
 import '../cart_screen.dart';
 
 /// Header button that opens the cart and shows how many items it holds.
-class CartButton extends StatelessWidget {
+class CartButton extends ConsumerWidget {
   const CartButton({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final count = context.read(cartItemCountProvider).watch(context);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final count = ref.watch(cartItemCountProvider).watch(context);
     return Stack(
       clipBehavior: Clip.none,
       children: [

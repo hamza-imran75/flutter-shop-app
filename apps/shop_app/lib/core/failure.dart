@@ -8,7 +8,8 @@ sealed class Failure implements Exception {
 }
 
 final class OfflineFailure extends Failure {
-  const OfflineFailure() : super("You're offline.");
+  const OfflineFailure()
+    : super('No connection. Check your internet and try again.');
 }
 
 final class ServerFailure extends Failure {

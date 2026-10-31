@@ -1,8 +1,8 @@
 import 'package:context_watch/context_watch.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ui_kit/ui_kit.dart';
 
-import '../../../core/provider_scope.dart';
 import '../domain/product.dart';
 import '../products_providers.dart';
 import 'widgets/add_to_cart_bar.dart';
@@ -11,17 +11,15 @@ import 'widgets/price_text.dart';
 import 'widgets/product_info_chips.dart';
 import 'widgets/rating_label.dart';
 
-class ProductDetailScreen extends StatelessWidget {
+class ProductDetailScreen extends ConsumerWidget {
   const ProductDetailScreen({super.key, required this.product});
 
   final Product product;
 
   @override
-  Widget build(BuildContext context) {
-    return ProviderBuilder(
-      provider: productDetailControllerProvider(product),
-      builder: (context, controller) => _DetailView(controller: controller),
-    );
+  Widget build(BuildContext context, WidgetRef ref) {
+    final controller = ref.watch(productDetailControllerProvider(product));
+    return _DetailView(controller: controller);
   }
 }
 

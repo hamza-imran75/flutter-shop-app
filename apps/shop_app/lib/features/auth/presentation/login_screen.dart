@@ -1,36 +1,32 @@
 import 'package:context_watch/context_watch.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ui_kit/ui_kit.dart';
 
 import '../../../core/core_providers.dart';
 import '../../../core/failure.dart';
-import '../../../core/provider_scope.dart';
 import '../auth_providers.dart';
 import 'login_controller.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends ConsumerWidget {
   const LoginScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return ProviderBuilder(
-      provider: loginControllerProvider,
-      builder: (context, controller) => _LoginView(controller: controller),
-    );
-  }
+  Widget build(BuildContext context, WidgetRef ref) =>
+      _LoginView(controller: ref.watch(loginControllerProvider));
 }
 
-class _LoginView extends StatefulWidget {
+class _LoginView extends ConsumerStatefulWidget {
   const _LoginView({required this.controller});
 
   final LoginController controller;
 
   @override
-  State<_LoginView> createState() => _LoginViewState();
+  ConsumerState<_LoginView> createState() => _LoginViewState();
 }
 
-class _LoginViewState extends State<_LoginView> {
+class _LoginViewState extends ConsumerState<_LoginView> {
   final _username = TextEditingController();
   final _password = TextEditingController();
   final _passwordFocus = FocusNode();
@@ -138,7 +134,7 @@ class _LoginViewState extends State<_LoginView> {
     );
   }
 
-  void _openDevPanel() => context.read(devPanelLauncherProvider)?.call(context);
+  void _openDevPanel() => ref.read(devPanelLauncherProvider)?.call(context);
 }
 
 class _Brand extends StatelessWidget {

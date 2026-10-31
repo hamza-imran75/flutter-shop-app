@@ -1,8 +1,8 @@
 import 'package:context_watch/context_watch.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ui_kit/ui_kit.dart';
 
-import '../../../core/provider_scope.dart';
 import '../cart_providers.dart';
 import 'cart_controller.dart';
 import 'cart_state.dart';
@@ -10,16 +10,12 @@ import 'widgets/cart_line_tile.dart';
 import 'widgets/cart_summary.dart';
 import 'widgets/order_placed_view.dart';
 
-class CartScreen extends StatelessWidget {
+class CartScreen extends ConsumerWidget {
   const CartScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return ProviderBuilder(
-      provider: cartControllerProvider,
-      builder: (context, controller) => _CartView(controller: controller),
-    );
-  }
+  Widget build(BuildContext context, WidgetRef ref) =>
+      _CartView(controller: ref.watch(cartControllerProvider));
 }
 
 class _CartView extends StatelessWidget {

@@ -1,5 +1,5 @@
 name: shop_app
-description: Shop demo app built without Material or Cupertino.
+description: Shop client for dummyjson.com.
 publish_to: none
 version: 1.0.0+1
 resolution: workspace
@@ -7,13 +7,14 @@ environment:
   sdk: ^3.13.0
 dependencies:
   context_watch: ^7.0.3
+  dummyjson_api:
+    path: ../../packages/dummyjson_api
   flutter:
     sdk: flutter
-  riverpod: ^3.4.3
+  flutter_riverpod: ^3.4.3
+  network:
+    path: ../../packages/network
   ui_kit:
     path: ../../packages/ui_kit
 dev_dependencies:
   flutter_lints: ^6.0.0
-flutter:
-  assets:
-    - assets/fake/

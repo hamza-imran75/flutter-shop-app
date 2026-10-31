@@ -1,11 +1,11 @@
 import 'package:context_watch/context_watch.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ui_kit/ui_kit.dart';
 
 import '../../../app/app_route.dart';
 import '../../../core/core_providers.dart';
 import '../../../core/failure.dart';
-import '../../../core/provider_scope.dart';
 import '../../auth/auth_providers.dart';
 import '../domain/product.dart';
 import 'product_detail_screen.dart';
@@ -18,28 +18,24 @@ import 'widgets/products_header.dart';
 import 'widgets/products_footer.dart';
 import '../products_providers.dart';
 
-class ProductsScreen extends StatelessWidget {
+class ProductsScreen extends ConsumerWidget {
   const ProductsScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return ProviderBuilder(
-      provider: productListControllerProvider,
-      builder: (context, controller) => _ProductsView(controller: controller),
-    );
-  }
+  Widget build(BuildContext context, WidgetRef ref) =>
+      _ProductsView(controller: ref.watch(productListControllerProvider));
 }
 
-class _ProductsView extends StatefulWidget {
+class _ProductsView extends ConsumerStatefulWidget {
   const _ProductsView({required this.controller});
 
   final ProductListController controller;
 
   @override
-  State<_ProductsView> createState() => _ProductsViewState();
+  ConsumerState<_ProductsView> createState() => _ProductsViewState();
 }
 
-class _ProductsViewState extends State<_ProductsView> {
+class _ProductsViewState extends ConsumerState<_ProductsView> {
   // Cards that already played their entrance, so scrolling back doesn't replay it.
   final _entered = <int>{};
 
@@ -60,10 +56,7 @@ class _ProductsViewState extends State<_ProductsView> {
   @override
   Widget build(BuildContext context) {
     final state = _controller.watch(context);
-    final online = context
-        .read(connectivityStatusProvider)
-        .online
-        .watch(context);
+    final online = ref.watch(connectivityStatusProvider).online.watch(context);
 
     return SafeArea(
       bottom: false,
@@ -71,8 +64,8 @@ class _ProductsViewState extends State<_ProductsView> {
         children: [
           ProductsHeader(
             onTitleLongPress: () =>
-                context.read(devPanelLauncherProvider)?.call(context),
-            onLogout: () => context.read(authControllerProvider).signOut(),
+                ref.read(devPanelLauncherProvider)?.call(context),
+            onLogout: () => ref.read(authControllerProvider).signOut(),
           ),
           Expanded(
             child: OfflineGate(
