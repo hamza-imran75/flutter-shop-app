@@ -17,3 +17,6 @@ export 'src/widgets/fade_switcher.dart';
 export 'src/widgets/pull_to_refresh.dart';
 export 'src/widgets/skeleton.dart';
 export 'src/widgets/status_view.dart';
+export 'src/offline/offline_gate.dart';
+export 'src/offline/offline_illustration.dart';
+export 'src/offline/offline_view.dart';
