@@ -21,11 +21,13 @@ class DebugNetworkControls {
 
   void unauthorizeNextRequest() => _unauthorizeNext = true;
 
-  /// The server answers the next authenticated request with a real 401.
-  Future<void> corruptAccessToken() async {
+  /// The server answers the next authenticated request with a real 401. The
+  /// value is not JWT shaped on purpose, because dummyjson answers 500 for a
+  /// malformed or tampered JWT and 401 only for expired or opaque tokens.
+  Future<void> invalidateAccessToken() async {
     final tokens = await _tokens.read();
     if (tokens == null) return;
-    await _tokens.write(tokens.copyWith(accessToken: 'corrupted.access.token'));
+    await _tokens.write(tokens.copyWith(accessToken: 'invalid'));
   }
 
   /// The server rejects the next refresh with a real 403.

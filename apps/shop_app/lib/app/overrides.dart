@@ -5,6 +5,8 @@ import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:network/network.dart';
 
 import '../core/core_providers.dart';
+import '../dev/debug_panel.dart';
+import '../dev/debug_providers.dart';
 import '../core/service_connectivity_status.dart';
 import '../features/auth/auth_providers.dart';
 import '../features/auth/data/api_auth_repository.dart';
@@ -24,7 +26,10 @@ final _sessionEventsProvider = Provider<SessionEvents>((ref) {
 });
 
 final _connectivityServiceProvider = Provider<ConnectivityService>((ref) {
-  final service = ConnectivityService.http(baseUrl: AppConfig.apiBaseUrl);
+  final service = ConnectivityService.http(
+    baseUrl: AppConfig.apiBaseUrl,
+    forceOffline: ref.watch(debugNetworkControlsProvider)?.forceOffline,
+  );
   ref.onDispose(service.dispose);
   return service;
 });
@@ -38,6 +43,7 @@ final _authApiProvider = Provider<AuthApi>((ref) {
       sessionEvents: ref.watch(_sessionEventsProvider),
       refresh: refreshTokens,
       log: kDebugMode ? (message) => debugPrint('[net] $message') : null,
+      debugControls: ref.watch(debugNetworkControlsProvider),
     ),
   );
   return AuthApi(dio);
@@ -45,6 +51,14 @@ final _authApiProvider = Provider<AuthApi>((ref) {
 
 /// The only place that knows which implementations back the app.
 List<Override> appOverrides() => [
+  if (kDebugMode) ...[
+    debugNetworkControlsProvider.overrideWith((ref) {
+      final controls = DebugNetworkControls(ref.watch(_tokenStoreProvider));
+      ref.onDispose(controls.dispose);
+      return controls;
+    }),
+    devPanelLauncherProvider.overrideWithValue(showDebugPanel),
+  ],
   connectivityStatusProvider.overrideWith(
     (ref) => ServiceConnectivityStatus(ref.watch(_connectivityServiceProvider)),
   ),
