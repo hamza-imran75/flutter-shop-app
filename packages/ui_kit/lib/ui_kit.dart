@@ -20,3 +20,4 @@ export 'src/widgets/status_view.dart';
 export 'src/offline/offline_gate.dart';
 export 'src/offline/offline_illustration.dart';
 export 'src/offline/offline_view.dart';
+export 'src/widgets/shake.dart';
