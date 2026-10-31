@@ -1,5 +1,5 @@
 name: shop_app
-description: Shop demo app built without Material or Cupertino.
+description: Shop client for dummyjson.com.
 publish_to: none
 version: 1.0.0+1
 resolution: workspace

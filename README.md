@@ -1,6 +1,6 @@
 # Shop app
 
-A Flutter shop client for https://dummyjson.com. It has a login, a paged product list, a product detail page and a local cart. The app uses the widgets layer only. There is no Material and no Cupertino anywhere, and `tools/check_no_material.sh` enforces that.
+A Flutter shop client for https://dummyjson.com. It has a login, a paged product list, a product detail page and a local cart.
 
 Phase 1 (this branch) is UI and state against fake repositories. Phase 2 swaps in the real network layer without touching screens or controllers.
 
@@ -10,7 +10,6 @@ Phase 1 (this branch) is UI and state against fake repositories. Phase 2 swaps i
 flutter pub get
 flutter run                                  # normal scenario
 flutter run --dart-define=FAKE_SCENARIO=slowLoading
-tools/check_no_material.sh                   # sources and pubspecs
 ```
 
 Scenarios for `FAKE_SCENARIO`: `normal`, `slowLoading`, `error`, `empty`, `offline`, `failLoadMore`. Log in with `emilys` / `emilyspass`. Any other credentials show an inline error.
