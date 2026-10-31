@@ -43,8 +43,10 @@ class OfflineView extends StatelessWidget {
                 Text(
                   message,
                   textAlign: TextAlign.center,
+                  // Sits over the planet, so it needs more contrast than the
+                  // usual secondary grey.
                   style: AppTextStyles.body.copyWith(
-                    color: AppColors.textSecondary,
+                    color: const Color(0xFFDDE1EE),
                   ),
                 ),
                 const SizedBox(height: AppSpacing.xl),
