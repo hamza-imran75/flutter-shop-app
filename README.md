@@ -7,6 +7,14 @@ flutter pub get
 cd apps/shop_app && flutter run
 ```
 
+<p>
+  <img src="screenshots/login.png" width="19%" alt="Login">
+  <img src="screenshots/products.png" width="19%" alt="Product list">
+  <img src="screenshots/detail.png" width="19%" alt="Product detail">
+  <img src="screenshots/cart.png" width="19%" alt="Cart">
+  <img src="screenshots/offline.png" width="19%" alt="Offline">
+</p>
+
 Log in with `emilys` / `emilyspass`. Debug builds log one `[net]` line per request, retry and refresh. Long-press the title on the login or list screen to open a debug panel that forces offline, 500s and 401s.
 
 ## Decisions
