@@ -10,8 +10,7 @@ Phase 1 (this branch) is UI and state against fake repositories. Phase 2 swaps i
 flutter pub get
 flutter run                                  # normal scenario
 flutter run --dart-define=FAKE_SCENARIO=slowLoading
-tools/check_no_material.sh                   # sources
-tools/check_no_material.sh --artifact path/to/kernel_blob.bin   # built app
+tools/check_no_material.sh                   # sources and pubspecs
 ```
 
 Scenarios for `FAKE_SCENARIO`: `normal`, `slowLoading`, `error`, `empty`, `offline`, `failLoadMore`. Log in with `emilys` / `emilyspass`. Any other credentials show an inline error.
