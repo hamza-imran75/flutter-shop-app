@@ -25,6 +25,7 @@ final productDetailControllerProvider = Provider.autoDispose
     .family<ProductDetailController, Product>((ref, product) {
       final controller = ProductDetailController(
         ref.watch(productRepositoryProvider),
+        ref.watch(connectivityStatusProvider),
         product,
       )..refresh();
       ref.onDispose(controller.dispose);
