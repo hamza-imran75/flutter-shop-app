@@ -1,13 +1,16 @@
 import 'package:flutter/widgets.dart';
 import 'package:ui_kit/ui_kit.dart';
 
+import 'package:context_watch/context_watch.dart';
+
+import '../../../../core/provider_scope.dart';
+import '../../../cart/cart_providers.dart';
 import '../../../cart/presentation/widgets/in_cart_chip.dart';
 import '../../domain/product.dart';
 import 'price_text.dart';
+import 'product_hero.dart';
 import 'product_image.dart';
 import 'rating_label.dart';
-
-String productHeroTag(Product product) => 'product-image-${product.id}';
 
 class ProductCard extends StatelessWidget {
   const ProductCard({super.key, required this.product, required this.onTap});
@@ -17,9 +20,13 @@ class ProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final quantity = context
+        .read(cartQuantityProvider(product.id))
+        .watch(context);
     return Semantics(
       button: true,
-      label: product.title,
+      label: _label(quantity),
+      excludeSemantics: true,
       child: Pressable(
         onTap: onTap,
         pressedScale: 0.98,
@@ -38,8 +45,8 @@ class ProductCard extends StatelessWidget {
                   child: Stack(
                     fit: StackFit.expand,
                     children: [
-                      Hero(
-                        tag: productHeroTag(product),
+                      ProductHero(
+                        product: product,
                         child: ProductImage(
                           url: product.cover,
                           radius: AppRadii.l - 2,
@@ -48,7 +55,7 @@ class ProductCard extends StatelessWidget {
                       Positioned(
                         bottom: 8,
                         left: 8,
-                        child: InCartChip(productId: product.id),
+                        child: InCartChip(quantity: quantity),
                       ),
                       if (product.hasDiscount)
                         Positioned(
@@ -107,6 +114,18 @@ class ProductCard extends StatelessWidget {
       ),
     );
   }
+}
+
+extension on ProductCard {
+  String _label(int quantity) => [
+    product.title,
+    ?product.brand,
+    formatPrice(product.hasDiscount ? product.discountedPrice : product.price),
+    if (product.hasDiscount)
+      '${product.discountPercentage.round()} percent off',
+    'rated ${product.rating.toStringAsFixed(1)} out of 5',
+    if (quantity > 0) 'in cart ×$quantity',
+  ].join(', ');
 }
 
 class _DiscountBadge extends StatelessWidget {

@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:ui_kit/ui_kit.dart';
 
 /// Fade plus a short horizontal drift. The Hero flight does the heavy lifting,
 /// so the page itself stays quiet.
@@ -9,6 +10,7 @@ PageRoute<T> appRoute<T>(WidgetBuilder builder, {RouteSettings? settings}) {
     reverseTransitionDuration: const Duration(milliseconds: 320),
     pageBuilder: (context, _, _) => builder(context),
     transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      if (context.reduceMotion) return child;
       final curved = CurvedAnimation(
         parent: animation,
         curve: Curves.easeOutCubic,
@@ -35,7 +37,8 @@ PageRoute<T> fadeRoute<T>(WidgetBuilder builder) {
     transitionDuration: const Duration(milliseconds: 260),
     reverseTransitionDuration: const Duration(milliseconds: 220),
     pageBuilder: (context, _, _) => builder(context),
-    transitionsBuilder: (context, animation, _, child) =>
-        FadeTransition(opacity: animation, child: child),
+    transitionsBuilder: (context, animation, _, child) => context.reduceMotion
+        ? child
+        : FadeTransition(opacity: animation, child: child),
   );
 }

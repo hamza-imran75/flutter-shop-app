@@ -21,7 +21,7 @@ class AddToCartBar extends StatelessWidget {
         .read(cartQuantityProvider(product.id))
         .watch(context);
     final cart = context.read(cartRepositoryProvider);
-    final reduce = MediaQuery.maybeDisableAnimationsOf(context) ?? false;
+    final reduce = context.reduceMotion;
 
     return DecoratedBox(
       decoration: const BoxDecoration(

@@ -142,7 +142,7 @@ class _ProductsViewState extends State<_ProductsView> {
           SliverPadding(
             padding: productGridPadding,
             sliver: SliverGrid.builder(
-              gridDelegate: productGridDelegate,
+              gridDelegate: productGridDelegate(context),
               itemCount: state.items.length,
               itemBuilder: (context, index) {
                 final product = state.items[index];

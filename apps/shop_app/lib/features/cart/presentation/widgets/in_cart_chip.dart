@@ -1,25 +1,17 @@
-import 'package:context_watch/context_watch.dart';
 import 'package:flutter/widgets.dart';
 import 'package:ui_kit/ui_kit.dart';
 
-import '../../../../core/provider_scope.dart';
-import '../../cart_providers.dart';
-
-/// "In cart ×N" marker for a product card. Rebuilds only when this product's
-/// quantity changes, and takes no space at zero.
+/// "In cart ×N" marker for a product card. Takes no space at zero. The card
+/// announces the quantity itself, so the chip stays out of semantics.
 class InCartChip extends StatelessWidget {
-  const InCartChip({super.key, required this.productId});
+  const InCartChip({super.key, required this.quantity});
 
-  final int productId;
+  final int quantity;
 
   @override
   Widget build(BuildContext context) {
-    final quantity = context
-        .read(cartQuantityProvider(productId))
-        .watch(context);
-    final reduce = MediaQuery.maybeDisableAnimationsOf(context) ?? false;
     return AnimatedSwitcher(
-      duration: reduce ? Duration.zero : const Duration(milliseconds: 220),
+      duration: context.motion(const Duration(milliseconds: 220)),
       switchInCurve: Curves.easeOutBack,
       transitionBuilder: (child, animation) => FadeTransition(
         opacity: animation,
@@ -49,10 +41,14 @@ class InCartChip extends StatelessWidget {
                       color: Color(0xFFFFFFFF),
                     ),
                     const SizedBox(width: 4),
-                    Text(
-                      'In cart ×$quantity',
-                      style: AppTextStyles.micro.copyWith(
-                        color: const Color(0xFFFFFFFF),
+                    Flexible(
+                      child: Text(
+                        'In cart ×$quantity',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppTextStyles.micro.copyWith(
+                          color: const Color(0xFFFFFFFF),
+                        ),
                       ),
                     ),
                   ],

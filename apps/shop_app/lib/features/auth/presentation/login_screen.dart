@@ -97,6 +97,7 @@ class _LoginViewState extends State<_LoginView> {
                       icon: LucideIcons.user,
                       enabled: !submitting,
                       hasError: failure != null,
+                      errorText: failure?.message,
                       textInputAction: TextInputAction.next,
                       onSubmitted: (_) => _passwordFocus.requestFocus(),
                     ),
@@ -204,12 +205,15 @@ class _VisibilityToggle extends StatelessWidget {
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.only(left: AppSpacing.s),
-          child: AppIcon(
-            obscured ? LucideIcons.eye : LucideIcons.eyeOff,
-            size: 18,
-            color: AppColors.textSecondary,
+        child: SizedBox(
+          width: 44,
+          height: 44,
+          child: Center(
+            child: AppIcon(
+              obscured ? LucideIcons.eye : LucideIcons.eyeOff,
+              size: 18,
+              color: AppColors.textSecondary,
+            ),
           ),
         ),
       ),
@@ -274,7 +278,7 @@ class _DemoHint extends StatelessWidget {
   Widget build(BuildContext context) {
     return Semantics(
       button: true,
-      label: 'Fill demo credentials',
+      label: 'Fill demo credentials, emilys and emilyspass',
       excludeSemantics: true,
       child: Pressable(
         onTap: onTap,
@@ -284,6 +288,7 @@ class _DemoHint extends StatelessWidget {
             horizontal: AppSpacing.l,
             vertical: AppSpacing.m,
           ),
+          constraints: const BoxConstraints(minHeight: 44),
           decoration: BoxDecoration(
             color: AppColors.surface,
             borderRadius: BorderRadius.circular(AppRadii.m),

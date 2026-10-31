@@ -43,7 +43,7 @@ class _CartLineTileState extends State<CartLineTile>
   Future<void> _remove() async {
     if (_removing || !widget.enabled) return;
     _removing = true;
-    final reduce = MediaQuery.maybeDisableAnimationsOf(context) ?? false;
+    final reduce = context.reduceMotion;
     if (!reduce) await _exit.reverse();
     if (mounted) widget.onRemove();
   }
@@ -70,24 +70,30 @@ class _CartLineTileState extends State<CartLineTile>
               borderRadius: BorderRadius.circular(AppRadii.l),
               border: Border.all(color: AppColors.border),
             ),
-            child: Padding(
-              padding: const EdgeInsets.all(AppSpacing.s),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(
-                    width: 84,
-                    height: 84,
-                    child: ExcludeSemantics(
-                      child: ProductImage(
-                        url: line.product.cover,
-                        radius: AppRadii.m,
+            child: Semantics(
+              container: true,
+              explicitChildNodes: true,
+              label:
+                  '${line.product.title}, ${formatPrice(line.product.hasDiscount ? line.product.discountedPrice : line.product.price)} each, total ${formatPrice(line.total)}',
+              child: Padding(
+                padding: const EdgeInsets.all(AppSpacing.s),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      width: 84,
+                      height: 84,
+                      child: ExcludeSemantics(
+                        child: ProductImage(
+                          url: line.product.cover,
+                          radius: AppRadii.m,
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(width: AppSpacing.m),
-                  Expanded(child: _details(line)),
-                ],
+                    const SizedBox(width: AppSpacing.m),
+                    Expanded(child: _details(line)),
+                  ],
+                ),
               ),
             ),
           ),
@@ -106,10 +112,12 @@ class _CartLineTileState extends State<CartLineTile>
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.only(top: 2),
-                child: AppText(
-                  line.product.title,
-                  style: AppTextStyles.bodyStrong,
-                  maxLines: 2,
+                child: ExcludeSemantics(
+                  child: AppText(
+                    line.product.title,
+                    style: AppTextStyles.bodyStrong,
+                    maxLines: 2,
+                  ),
                 ),
               ),
             ),
@@ -121,7 +129,9 @@ class _CartLineTileState extends State<CartLineTile>
             ),
           ],
         ),
-        PriceText(product: line.product, showOriginal: false),
+        ExcludeSemantics(
+          child: PriceText(product: line.product, showOriginal: false),
+        ),
         const SizedBox(height: AppSpacing.s),
         Row(
           children: [
@@ -131,8 +141,19 @@ class _CartLineTileState extends State<CartLineTile>
               onIncrement: () => widget.onQuantity(line.quantity + 1),
               onDecrement: _decrement,
             ),
-            const Spacer(),
-            AppText(formatPrice(line.total), style: AppTextStyles.heading),
+            const SizedBox(width: AppSpacing.s),
+            Expanded(
+              child: ExcludeSemantics(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerRight,
+                  child: AppText(
+                    formatPrice(line.total),
+                    style: AppTextStyles.heading,
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
       ],

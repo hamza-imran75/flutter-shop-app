@@ -8,14 +8,20 @@ class ProductGridSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Shimmer(
-      child: IgnorePointer(
-        child: GridView.builder(
-          physics: const NeverScrollableScrollPhysics(),
-          padding: productGridPadding,
-          gridDelegate: productGridDelegate,
-          itemCount: 8,
-          itemBuilder: (context, index) => const _SkeletonCard(),
+    return Semantics(
+      label: 'Loading products',
+      liveRegion: true,
+      child: ExcludeSemantics(
+        child: Shimmer(
+          child: IgnorePointer(
+            child: GridView.builder(
+              physics: const NeverScrollableScrollPhysics(),
+              padding: productGridPadding,
+              gridDelegate: productGridDelegate(context),
+              itemCount: 8,
+              itemBuilder: (context, index) => const _SkeletonCard(),
+            ),
+          ),
         ),
       ),
     );

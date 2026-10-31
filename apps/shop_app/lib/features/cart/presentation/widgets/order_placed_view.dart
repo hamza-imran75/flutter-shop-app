@@ -24,7 +24,7 @@ class _OrderPlacedViewState extends State<OrderPlacedView>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final reduce = MediaQuery.maybeDisableAnimationsOf(context) ?? false;
+    final reduce = context.reduceMotion;
     if (reduce) {
       _pop.value = 1;
     } else if (!_pop.isAnimating && _pop.value == 0) {

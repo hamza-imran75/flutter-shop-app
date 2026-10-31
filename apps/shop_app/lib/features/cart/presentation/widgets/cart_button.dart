@@ -45,7 +45,7 @@ class _Badge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final reduce = MediaQuery.maybeDisableAnimationsOf(context) ?? false;
+    final reduce = context.reduceMotion;
     return AnimatedSwitcher(
       duration: reduce ? Duration.zero : const Duration(milliseconds: 220),
       switchInCurve: Curves.easeOutBack,

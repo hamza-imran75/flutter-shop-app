@@ -38,16 +38,18 @@ class ProductsFooter extends StatelessWidget {
 
   Widget _content() {
     if (error != null) {
-      return Row(
-        mainAxisAlignment: MainAxisAlignment.center,
+      return Wrap(
+        alignment: WrapAlignment.center,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        spacing: AppSpacing.s,
         children: [
           const AppIcon(
             LucideIcons.circleAlert,
             size: 16,
             color: AppColors.danger,
           ),
-          const SizedBox(width: AppSpacing.s),
-          Flexible(
+          Semantics(
+            liveRegion: true,
             child: AppText(
               error is OfflineFailure
                   ? "You're offline."
@@ -55,20 +57,29 @@ class ProductsFooter extends StatelessWidget {
               style: AppTextStyles.caption,
             ),
           ),
-          const SizedBox(width: AppSpacing.m),
-          Pressable(
-            onTap: onRetry,
-            builder: (context, _) => Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
-              decoration: BoxDecoration(
-                color: AppColors.surfaceRaised,
-                borderRadius: BorderRadius.circular(AppRadii.pill),
-                border: Border.all(color: AppColors.border),
-              ),
-              child: AppText(
-                'Retry',
-                style: AppTextStyles.caption,
-                color: AppColors.accent,
+          Semantics(
+            button: true,
+            label: 'Retry loading more products',
+            excludeSemantics: true,
+            child: Pressable(
+              onTap: onRetry,
+              builder: (context, _) => Container(
+                constraints: const BoxConstraints(minHeight: 44),
+                alignment: Alignment.center,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 7,
+                ),
+                decoration: BoxDecoration(
+                  color: AppColors.surfaceRaised,
+                  borderRadius: BorderRadius.circular(AppRadii.pill),
+                  border: Border.all(color: AppColors.border),
+                ),
+                child: AppText(
+                  'Retry',
+                  style: AppTextStyles.caption,
+                  color: AppColors.accent,
+                ),
               ),
             ),
           ),
@@ -76,10 +87,13 @@ class ProductsFooter extends StatelessWidget {
       );
     }
     if (loadingMore || hasMore) {
-      return const Center(
-        child: SizedBox(
-          height: 28,
-          child: Center(child: AppSpinner(size: 22, color: AppColors.accent)),
+      return Semantics(
+        label: 'Loading more products',
+        child: const Center(
+          child: SizedBox(
+            height: 28,
+            child: Center(child: AppSpinner(size: 22, color: AppColors.accent)),
+          ),
         ),
       );
     }
@@ -115,41 +129,44 @@ class RefreshNotice extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        AppSpacing.l,
-        AppSpacing.s,
-        AppSpacing.l,
-        0,
-      ),
-      child: Container(
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.m,
-          vertical: 10,
+    return Semantics(
+      liveRegion: true,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.l,
+          AppSpacing.s,
+          AppSpacing.l,
+          0,
         ),
-        decoration: BoxDecoration(
-          color: AppColors.danger.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(AppRadii.m),
-          border: Border.all(color: AppColors.danger.withValues(alpha: 0.3)),
-        ),
-        child: Row(
-          children: [
-            const AppIcon(
-              LucideIcons.circleAlert,
-              size: 16,
-              color: AppColors.danger,
-            ),
-            const SizedBox(width: AppSpacing.s),
-            Expanded(
-              child: AppText(
-                failure is OfflineFailure
-                    ? "You're offline. Showing earlier results."
-                    : "Couldn't refresh. Showing earlier results.",
-                style: AppTextStyles.caption,
-                color: AppColors.textPrimary,
+        child: Container(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.m,
+            vertical: 10,
+          ),
+          decoration: BoxDecoration(
+            color: AppColors.danger.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(AppRadii.m),
+            border: Border.all(color: AppColors.danger.withValues(alpha: 0.3)),
+          ),
+          child: Row(
+            children: [
+              const AppIcon(
+                LucideIcons.circleAlert,
+                size: 16,
+                color: AppColors.danger,
               ),
-            ),
-          ],
+              const SizedBox(width: AppSpacing.s),
+              Expanded(
+                child: AppText(
+                  failure is OfflineFailure
+                      ? "You're offline. Showing earlier results."
+                      : "Couldn't refresh. Showing earlier results.",
+                  style: AppTextStyles.caption,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

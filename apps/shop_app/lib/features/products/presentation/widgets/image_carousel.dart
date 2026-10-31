@@ -5,7 +5,7 @@ import '../../../../app/app_route.dart';
 import '../image_viewer_screen.dart';
 
 import '../../domain/product.dart';
-import 'product_card.dart';
+import 'product_hero.dart';
 import 'product_image.dart';
 
 class ImageCarousel extends StatefulWidget {
@@ -44,7 +44,13 @@ class _ImageCarouselState extends State<ImageCarousel> {
             itemBuilder: (context, index) {
               final image = Padding(
                 padding: const EdgeInsets.symmetric(horizontal: AppSpacing.l),
-                child: ProductImage(url: images[index], radius: AppRadii.xl),
+                child: Semantics(
+                  image: true,
+                  label:
+                      '${widget.product.title}, photo ${index + 1} of ${images.length}. Double tap to enlarge',
+                  excludeSemantics: true,
+                  child: ProductImage(url: images[index], radius: AppRadii.xl),
+                ),
               );
               final tappable = GestureDetector(
                 onTap: () => Navigator.of(context).push(
@@ -56,14 +62,16 @@ class _ImageCarouselState extends State<ImageCarousel> {
                 child: image,
               );
               return index == 0
-                  ? Hero(tag: productHeroTag(widget.product), child: tappable)
+                  ? ProductHero(product: widget.product, child: tappable)
                   : tappable;
             },
           ),
         ),
         if (images.length > 1) ...[
           const SizedBox(height: AppSpacing.m),
-          _Dots(count: images.length, index: _page),
+          ExcludeSemantics(
+            child: _Dots(count: images.length, index: _page),
+          ),
         ],
       ],
     );
