@@ -1,5 +1,7 @@
 import 'package:flutter/widgets.dart';
 
+import 'motion.dart';
+
 /// Tap target that scales down while pressed. [builder] receives the 0..1
 /// press progress so callers can tint their own content.
 class Pressable extends StatefulWidget {
@@ -50,7 +52,9 @@ class _PressableState extends State<Pressable>
         builder: (context, _) {
           final curved = Curves.easeOut.transform(_controller.value);
           return Transform.scale(
-            scale: 1 - (1 - widget.pressedScale) * curved,
+            scale: context.reduceMotion
+                ? 1
+                : 1 - (1 - widget.pressedScale) * curved,
             child: widget.builder(context, curved),
           );
         },

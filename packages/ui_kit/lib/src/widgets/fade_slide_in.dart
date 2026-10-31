@@ -1,5 +1,7 @@
 import 'package:flutter/widgets.dart';
 
+import 'motion.dart';
+
 /// Fades and lifts [child] in once, after [delay]. With [play] false the child
 /// is shown immediately, so rebuilt list items don't replay the entrance.
 class FadeSlideIn extends StatefulWidget {
@@ -25,8 +27,9 @@ class _FadeSlideInState extends State<FadeSlideIn>
   late final AnimationController _controller = AnimationController(
     vsync: this,
     duration: const Duration(milliseconds: 420),
-    value: widget.play ? 0 : 1,
   );
+
+  bool _started = false;
 
   late final Animation<double> _curve = CurvedAnimation(
     parent: _controller,
@@ -34,9 +37,14 @@ class _FadeSlideInState extends State<FadeSlideIn>
   );
 
   @override
-  void initState() {
-    super.initState();
-    if (!widget.play) return;
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_started) return;
+    _started = true;
+    if (!widget.play || context.reduceMotion) {
+      _controller.value = 1;
+      return;
+    }
     Future<void>.delayed(widget.delay, () {
       if (mounted) _controller.forward();
     });

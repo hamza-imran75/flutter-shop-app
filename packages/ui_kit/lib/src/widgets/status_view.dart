@@ -35,28 +35,40 @@ class StatusView extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Container(
-              width: 64,
-              height: 64,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: tint.withValues(alpha: 0.12),
-                border: Border.all(color: tint.withValues(alpha: 0.3)),
+            ExcludeSemantics(
+              child: Container(
+                width: 64,
+                height: 64,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: tint.withValues(alpha: 0.12),
+                  border: Border.all(color: tint.withValues(alpha: 0.3)),
+                ),
+                child: Center(child: AppIcon(icon, size: 26, color: tint)),
               ),
-              child: Center(child: AppIcon(icon, size: 26, color: tint)),
             ),
             const SizedBox(height: AppSpacing.l),
-            Text(
-              title,
-              style: AppTextStyles.heading,
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: AppSpacing.s - 2),
-            Text(
-              message,
-              textAlign: TextAlign.center,
-              style: AppTextStyles.body.copyWith(
-                color: AppColors.textSecondary,
+            Semantics(
+              container: true,
+              liveRegion: true,
+              label: '$title. $message',
+              excludeSemantics: true,
+              child: Column(
+                children: [
+                  Text(
+                    title,
+                    style: AppTextStyles.heading,
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: AppSpacing.s - 2),
+                  Text(
+                    message,
+                    textAlign: TextAlign.center,
+                    style: AppTextStyles.body.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                ],
               ),
             ),
             if (actionLabel != null) ...[

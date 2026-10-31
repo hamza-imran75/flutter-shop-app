@@ -32,6 +32,7 @@ class AppButton extends StatelessWidget {
       button: true,
       enabled: enabled,
       label: label,
+      value: loading ? 'Loading' : null,
       excludeSemantics: true,
       child: Pressable(
         onTap: enabled ? onPressed : null,

@@ -21,7 +21,9 @@ class OfflineView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Semantics(
       container: true,
+      liveRegion: true,
       label: '$title. $message',
+      excludeSemantics: true,
       child: Center(
         child: FadeSlideIn(
           offset: 18,

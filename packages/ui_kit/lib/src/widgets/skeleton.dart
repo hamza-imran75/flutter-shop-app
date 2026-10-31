@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 
 import '../tokens/app_colors.dart';
+import 'motion.dart';
 
 /// Sweeps a highlight across every [SkeletonBox] below it.
 class Shimmer extends StatefulWidget {
@@ -16,7 +17,16 @@ class _ShimmerState extends State<Shimmer> with SingleTickerProviderStateMixin {
   late final AnimationController _controller = AnimationController(
     vsync: this,
     duration: const Duration(milliseconds: 1400),
-  )..repeat();
+  );
+  bool _started = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_started) return;
+    _started = true;
+    if (!context.reduceMotion) _controller.repeat();
+  }
 
   @override
   void dispose() {

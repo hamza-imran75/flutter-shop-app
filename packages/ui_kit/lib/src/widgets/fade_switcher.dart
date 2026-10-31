@@ -1,5 +1,7 @@
 import 'package:flutter/widgets.dart';
 
+import 'motion.dart';
+
 /// Cross-fades between children. Give each distinct state its own key.
 class FadeSwitcher extends StatelessWidget {
   const FadeSwitcher({super.key, required this.child});
@@ -9,7 +11,7 @@ class FadeSwitcher extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AnimatedSwitcher(
-      duration: const Duration(milliseconds: 260),
+      duration: context.motion(const Duration(milliseconds: 260)),
       switchInCurve: Curves.easeOut,
       switchOutCurve: Curves.easeIn,
       layoutBuilder: (current, previous) =>

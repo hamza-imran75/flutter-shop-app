@@ -5,6 +5,7 @@ import '../tokens/app_colors.dart';
 import '../tokens/app_spacing.dart';
 import '../typography/app_text_styles.dart';
 import 'app_icon.dart';
+import 'motion.dart';
 import 'pressable.dart';
 
 /// Minus, count and plus. At a quantity of one the minus shows a bin, since
@@ -50,9 +51,8 @@ class QuantityStepper extends StatelessWidget {
               color: quantity == 1 ? AppColors.danger : AppColors.textPrimary,
               onTap: onDecrement,
             ),
-            SizedBox(
-              width: 28,
-              height: _size,
+            ConstrainedBox(
+              constraints: const BoxConstraints(minWidth: 28, minHeight: _size),
               child: _Count(quantity: quantity),
             ),
             _StepButton(
@@ -73,9 +73,8 @@ class _Count extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final reduce = MediaQuery.maybeDisableAnimationsOf(context) ?? false;
     return AnimatedSwitcher(
-      duration: reduce ? Duration.zero : const Duration(milliseconds: 180),
+      duration: context.motion(const Duration(milliseconds: 180)),
       transitionBuilder: (child, animation) => FadeTransition(
         opacity: animation,
         child: ScaleTransition(

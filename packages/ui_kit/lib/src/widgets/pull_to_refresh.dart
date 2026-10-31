@@ -1,5 +1,7 @@
 import 'dart:math' as math;
 
+import 'package:flutter/semantics.dart' show CustomSemanticsAction;
+
 import 'package:flutter/widgets.dart';
 
 import '../tokens/app_colors.dart';
@@ -79,6 +81,18 @@ class _PullToRefreshState extends State<PullToRefresh>
 
   @override
   Widget build(BuildContext context) {
+    return Semantics(
+      container: true,
+      customSemanticsActions: {
+        const CustomSemanticsAction(label: 'Refresh'): () {
+          if (!_refreshing) _start();
+        },
+      },
+      child: _content(),
+    );
+  }
+
+  Widget _content() {
     return Stack(
       children: [
         Positioned.fill(

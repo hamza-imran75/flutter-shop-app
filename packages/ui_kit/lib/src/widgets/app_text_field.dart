@@ -24,6 +24,7 @@ class AppTextField extends StatefulWidget {
     this.hasError = false,
     this.enabled = true,
     this.autofillHints,
+    this.errorText,
   });
 
   final TextEditingController controller;
@@ -39,6 +40,9 @@ class AppTextField extends StatefulWidget {
   final bool hasError;
   final bool enabled;
   final Iterable<String>? autofillHints;
+
+  /// Announced with the label. The caller still renders the visible message.
+  final String? errorText;
 
   @override
   State<AppTextField> createState() => _AppTextFieldState();
@@ -78,14 +82,16 @@ class _AppTextFieldState extends State<AppTextField> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(widget.label, style: AppTextStyles.caption),
+        ExcludeSemantics(
+          child: Text(widget.label, style: AppTextStyles.caption),
+        ),
         const SizedBox(height: AppSpacing.s - 2),
         GestureDetector(
           behavior: HitTestBehavior.opaque,
           onTap: widget.enabled ? _focus.requestFocus : null,
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 160),
-            height: 50,
+            constraints: const BoxConstraints(minHeight: 50),
             padding: const EdgeInsets.symmetric(horizontal: AppSpacing.m + 2),
             decoration: BoxDecoration(
               color: AppColors.surface,
@@ -118,32 +124,40 @@ class _AppTextFieldState extends State<AppTextField> {
                     children: [
                       if (empty && widget.hint != null)
                         IgnorePointer(
-                          child: Text(
-                            widget.hint!,
-                            style: AppTextStyles.body.copyWith(
-                              color: AppColors.textTertiary,
+                          child: ExcludeSemantics(
+                            child: Text(
+                              widget.hint!,
+                              style: AppTextStyles.body.copyWith(
+                                color: AppColors.textTertiary,
+                              ),
                             ),
                           ),
                         ),
-                      EditableText(
-                        controller: widget.controller,
-                        focusNode: _focus,
-                        style: AppTextStyles.body,
-                        cursorColor: AppColors.primaryTop,
-                        backgroundCursorColor: AppColors.surfaceRaised,
-                        selectionColor: AppColors.primaryTop.withValues(
-                          alpha: 0.35,
+                      Semantics(
+                        label: widget.errorText == null
+                            ? widget.label
+                            : '${widget.label}. Error: ${widget.errorText}',
+                        hint: widget.hint,
+                        child: EditableText(
+                          controller: widget.controller,
+                          focusNode: _focus,
+                          style: AppTextStyles.body,
+                          cursorColor: AppColors.primaryTop,
+                          backgroundCursorColor: AppColors.surfaceRaised,
+                          selectionColor: AppColors.primaryTop.withValues(
+                            alpha: 0.35,
+                          ),
+                          obscureText: widget.obscureText,
+                          autocorrect: false,
+                          enableSuggestions: false,
+                          readOnly: !widget.enabled,
+                          keyboardType: widget.keyboardType,
+                          textInputAction: widget.textInputAction,
+                          onSubmitted: widget.onSubmitted,
+                          autofillHints: widget.autofillHints,
+                          keyboardAppearance: Brightness.dark,
+                          scrollPadding: const EdgeInsets.only(bottom: 120),
                         ),
-                        obscureText: widget.obscureText,
-                        autocorrect: false,
-                        enableSuggestions: false,
-                        readOnly: !widget.enabled,
-                        keyboardType: widget.keyboardType,
-                        textInputAction: widget.textInputAction,
-                        onSubmitted: widget.onSubmitted,
-                        autofillHints: widget.autofillHints,
-                        keyboardAppearance: Brightness.dark,
-                        scrollPadding: const EdgeInsets.only(bottom: 120),
                       ),
                     ],
                   ),
