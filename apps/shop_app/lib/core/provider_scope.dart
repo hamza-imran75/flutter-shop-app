@@ -5,7 +5,11 @@ import 'package:riverpod/riverpod.dart';
 /// Minimal bridge between the pure-Dart `riverpod` package and the widget
 /// tree. `flutter_riverpod` is avoided because it imports Material.
 class ProviderScope extends StatefulWidget {
-  const ProviderScope({super.key, this.overrides = const [], required this.child});
+  const ProviderScope({
+    super.key,
+    this.overrides = const [],
+    required this.child,
+  });
 
   final List<Override> overrides;
   final Widget child;
@@ -21,8 +25,9 @@ class ProviderScope extends StatefulWidget {
 }
 
 class _ProviderScopeState extends State<ProviderScope> {
-  late final ProviderContainer _container =
-      ProviderContainer(overrides: widget.overrides);
+  late final ProviderContainer _container = ProviderContainer(
+    overrides: widget.overrides,
+  );
 
   @override
   void dispose() {
@@ -53,7 +58,11 @@ extension ReadProvider on BuildContext {
 /// provider (for example a screen controller) lives and dies with its screen.
 /// The resolved value is handed to [builder] and is not observed for changes.
 class ProviderBuilder<T> extends StatefulWidget {
-  const ProviderBuilder({super.key, required this.provider, required this.builder});
+  const ProviderBuilder({
+    super.key,
+    required this.provider,
+    required this.builder,
+  });
 
   final ProviderListenable<T> provider;
   final Widget Function(BuildContext context, T value) builder;

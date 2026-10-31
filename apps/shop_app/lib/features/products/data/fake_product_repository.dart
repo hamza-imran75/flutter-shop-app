@@ -41,10 +41,14 @@ class FakeProductRepository implements ProductRepository {
     await _simulateRequest();
     if (scenario.value == FakeScenario.error) throw const ServerFailure();
     final all = (await _loadCatalog()).products;
-    return all.firstWhere((p) => p.id == id, orElse: () => throw const ServerFailure());
+    return all.firstWhere(
+      (p) => p.id == id,
+      orElse: () => throw const ServerFailure(),
+    );
   }
 
-  Future<FakeProductCatalog> _loadCatalog() => _catalog ??= FakeProductCatalog.load();
+  Future<FakeProductCatalog> _loadCatalog() =>
+      _catalog ??= FakeProductCatalog.load();
 
   Future<void> _simulateRequest() async {
     final slow = scenario.value == FakeScenario.slowLoading;

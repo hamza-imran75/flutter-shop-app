@@ -90,5 +90,7 @@ class SpinnerPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(SpinnerPainter old) =>
-      old.turns != turns || old.color != color || old.strokeWidth != strokeWidth;
+      old.turns != turns ||
+      old.color != color ||
+      old.strokeWidth != strokeWidth;
 }

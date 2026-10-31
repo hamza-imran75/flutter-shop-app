@@ -30,6 +30,11 @@ abstract final class AppTextStyles {
   static final body = _inter(15, 400, height: 1.45);
   static final bodyStrong = _inter(15, 600, height: 1.4);
   static final label = _inter(15, 500, height: 1.2);
-  static final caption = _inter(13, 500, height: 1.3, color: AppColors.textSecondary);
+  static final caption = _inter(
+    13,
+    500,
+    height: 1.3,
+    color: AppColors.textSecondary,
+  );
   static final micro = _inter(11, 600, height: 1.2, letterSpacing: 0.2);
 }

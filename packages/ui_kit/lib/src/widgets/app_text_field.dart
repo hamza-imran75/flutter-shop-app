@@ -71,8 +71,8 @@ class _AppTextFieldState extends State<AppTextField> {
     final borderColor = widget.hasError
         ? AppColors.danger
         : focused
-            ? AppColors.primaryTop
-            : AppColors.border;
+        ? AppColors.primaryTop
+        : AppColors.border;
     final empty = widget.controller.text.isEmpty;
 
     return Column(
@@ -120,8 +120,9 @@ class _AppTextFieldState extends State<AppTextField> {
                         IgnorePointer(
                           child: Text(
                             widget.hint!,
-                            style: AppTextStyles.body
-                                .copyWith(color: AppColors.textTertiary),
+                            style: AppTextStyles.body.copyWith(
+                              color: AppColors.textTertiary,
+                            ),
                           ),
                         ),
                       EditableText(
@@ -130,8 +131,9 @@ class _AppTextFieldState extends State<AppTextField> {
                         style: AppTextStyles.body,
                         cursorColor: AppColors.primaryTop,
                         backgroundCursorColor: AppColors.surfaceRaised,
-                        selectionColor:
-                            AppColors.primaryTop.withValues(alpha: 0.35),
+                        selectionColor: AppColors.primaryTop.withValues(
+                          alpha: 0.35,
+                        ),
                         obscureText: widget.obscureText,
                         autocorrect: false,
                         enableSuggestions: false,

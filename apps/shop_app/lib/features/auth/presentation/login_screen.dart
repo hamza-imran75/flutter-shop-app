@@ -62,78 +62,75 @@ class _LoginViewState extends State<_LoginView> {
     final failure = state is LoginFailed ? state.failure : null;
     final inset = MediaQuery.viewInsetsOf(context).bottom;
 
+    // The layout is top-aligned and sized from the screen height without the
+    // keyboard, so opening the keyboard never re-centers or moves the content.
+    // Only the bottom padding grows, which lets the scroll view reveal a
+    // focused field if the keyboard would cover it.
+    final topGap = MediaQuery.sizeOf(context).height * 0.05;
+
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: () => FocusScope.of(context).unfocus(),
       child: SafeArea(
-        child: LayoutBuilder(
-          builder: (context, constraints) => SingleChildScrollView(
-            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-            padding: EdgeInsets.fromLTRB(
-              AppSpacing.xl,
-              AppSpacing.xl,
-              AppSpacing.xl,
-              AppSpacing.xl + inset,
-            ),
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                minHeight: (constraints.maxHeight - AppSpacing.xl * 2 - inset)
-                    .clamp(0, double.infinity),
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  _Brand(onLongPress: _openDevPanel),
-                  const SizedBox(height: AppSpacing.xxl),
-                  Shake(
-                    trigger: state is LoginFailed ? state : null,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        AppTextField(
-                          controller: _username,
-                          label: 'Username',
-                          hint: 'emilys',
-                          icon: LucideIcons.user,
-                          enabled: !submitting,
-                          hasError: failure != null,
-                          textInputAction: TextInputAction.next,
-                          onSubmitted: (_) => _passwordFocus.requestFocus(),
-                        ),
-                        const SizedBox(height: AppSpacing.l),
-                        AppTextField(
-                          controller: _password,
-                          focusNode: _passwordFocus,
-                          label: 'Password',
-                          hint: 'Your password',
-                          icon: LucideIcons.lock,
-                          obscureText: _obscure,
-                          enabled: !submitting,
-                          hasError: failure != null,
-                          textInputAction: TextInputAction.done,
-                          onSubmitted: (_) => _submit(),
-                          suffix: _VisibilityToggle(
-                            obscured: _obscure,
-                            onTap: () => setState(() => _obscure = !_obscure),
-                          ),
-                        ),
-                      ],
+        child: SingleChildScrollView(
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+          padding: EdgeInsets.fromLTRB(
+            AppSpacing.xl,
+            topGap,
+            AppSpacing.xl,
+            AppSpacing.xl + inset,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _Brand(onLongPress: _openDevPanel),
+              const SizedBox(height: AppSpacing.xxl),
+              Shake(
+                trigger: state is LoginFailed ? state : null,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    AppTextField(
+                      controller: _username,
+                      label: 'Username',
+                      hint: 'emilys',
+                      icon: LucideIcons.user,
+                      enabled: !submitting,
+                      hasError: failure != null,
+                      textInputAction: TextInputAction.next,
+                      onSubmitted: (_) => _passwordFocus.requestFocus(),
                     ),
-                  ),
-                  _ErrorLine(failure: failure),
-                  const SizedBox(height: AppSpacing.l),
-                  AppButton(
-                    label: 'Sign in',
-                    icon: LucideIcons.logIn,
-                    loading: submitting,
-                    onPressed: _submit,
-                  ),
-                  const SizedBox(height: AppSpacing.xl),
-                  _DemoHint(onTap: submitting ? null : _fillDemo),
-                ],
+                    const SizedBox(height: AppSpacing.l),
+                    AppTextField(
+                      controller: _password,
+                      focusNode: _passwordFocus,
+                      label: 'Password',
+                      hint: 'Your password',
+                      icon: LucideIcons.lock,
+                      obscureText: _obscure,
+                      enabled: !submitting,
+                      hasError: failure != null,
+                      textInputAction: TextInputAction.done,
+                      onSubmitted: (_) => _submit(),
+                      suffix: _VisibilityToggle(
+                        obscured: _obscure,
+                        onTap: () => setState(() => _obscure = !_obscure),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
+              _ErrorLine(failure: failure),
+              const SizedBox(height: AppSpacing.l),
+              AppButton(
+                label: 'Sign in',
+                icon: LucideIcons.logIn,
+                loading: submitting,
+                onPressed: _submit,
+              ),
+              const SizedBox(height: AppSpacing.xl),
+              _DemoHint(onTap: submitting ? null : _fillDemo),
+            ],
           ),
         ),
       ),
@@ -175,7 +172,9 @@ class _Brand extends StatelessWidget {
                 ),
               ],
             ),
-            child: const Center(child: AppIcon(LucideIcons.shoppingBag, size: 26)),
+            child: const Center(
+              child: AppIcon(LucideIcons.shoppingBag, size: 26),
+            ),
           ),
           const SizedBox(height: AppSpacing.xl),
           AppText('Welcome back', style: AppTextStyles.display),
@@ -292,7 +291,11 @@ class _DemoHint extends StatelessWidget {
           ),
           child: Row(
             children: [
-              const AppIcon(LucideIcons.sparkles, size: 16, color: AppColors.accent),
+              const AppIcon(
+                LucideIcons.sparkles,
+                size: 16,
+                color: AppColors.accent,
+              ),
               const SizedBox(width: AppSpacing.m),
               Expanded(
                 child: AppText(

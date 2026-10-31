@@ -46,12 +46,18 @@ class StatusView extends StatelessWidget {
               child: Center(child: AppIcon(icon, size: 26, color: tint)),
             ),
             const SizedBox(height: AppSpacing.l),
-            Text(title, style: AppTextStyles.heading, textAlign: TextAlign.center),
+            Text(
+              title,
+              style: AppTextStyles.heading,
+              textAlign: TextAlign.center,
+            ),
             const SizedBox(height: AppSpacing.s - 2),
             Text(
               message,
               textAlign: TextAlign.center,
-              style: AppTextStyles.body.copyWith(color: AppColors.textSecondary),
+              style: AppTextStyles.body.copyWith(
+                color: AppColors.textSecondary,
+              ),
             ),
             if (actionLabel != null) ...[
               const SizedBox(height: AppSpacing.xl),
@@ -87,12 +93,12 @@ class EmptyView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => StatusView(
-        icon: icon,
-        title: title,
-        message: message,
-        actionLabel: actionLabel,
-        onAction: onAction,
-      );
+    icon: icon,
+    title: title,
+    message: message,
+    actionLabel: actionLabel,
+    onAction: onAction,
+  );
 }
 
 class ErrorView extends StatelessWidget {
@@ -113,12 +119,12 @@ class ErrorView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => StatusView(
-        icon: icon ?? LucideIcons.triangleAlert,
-        title: title,
-        message: message,
-        tint: AppColors.danger,
-        actionLabel: retryLabel,
-        actionIcon: LucideIcons.rotateCw,
-        onAction: onRetry,
-      );
+    icon: icon ?? LucideIcons.triangleAlert,
+    title: title,
+    message: message,
+    tint: AppColors.danger,
+    actionLabel: retryLabel,
+    actionIcon: LucideIcons.rotateCw,
+    onAction: onRetry,
+  );
 }

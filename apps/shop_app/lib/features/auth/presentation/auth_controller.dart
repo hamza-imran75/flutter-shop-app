@@ -15,7 +15,10 @@ class AuthController extends ValueNotifier<AuthState> {
 
   /// Throws the repository's [Failure] so the form can show it inline.
   Future<void> signIn(String username, String password) async {
-    final session = await _repository.login(username: username, password: password);
+    final session = await _repository.login(
+      username: username,
+      password: password,
+    );
     value = AuthSignedIn(session);
   }
 

@@ -20,7 +20,9 @@ final class UnauthorizedFailure extends Failure {
 }
 
 final class InvalidCredentialsFailure extends Failure {
-  const InvalidCredentialsFailure([super.message = 'Invalid username or password.']);
+  const InvalidCredentialsFailure([
+    super.message = 'Invalid username or password.',
+  ]);
 }
 
 final class UnknownFailure extends Failure {
@@ -28,5 +30,6 @@ final class UnknownFailure extends Failure {
 }
 
 extension FailureCoercion on Object {
-  Failure asFailure() => this is Failure ? this as Failure : const UnknownFailure();
+  Failure asFailure() =>
+      this is Failure ? this as Failure : const UnknownFailure();
 }

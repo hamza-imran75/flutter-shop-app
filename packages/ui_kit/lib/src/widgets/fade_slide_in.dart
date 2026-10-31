@@ -28,8 +28,10 @@ class _FadeSlideInState extends State<FadeSlideIn>
     value: widget.play ? 0 : 1,
   );
 
-  late final Animation<double> _curve =
-      CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic);
+  late final Animation<double> _curve = CurvedAnimation(
+    parent: _controller,
+    curve: Curves.easeOutCubic,
+  );
 
   @override
   void initState() {

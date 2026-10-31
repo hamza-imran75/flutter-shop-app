@@ -41,8 +41,9 @@ class OfflineView extends StatelessWidget {
                 Text(
                   message,
                   textAlign: TextAlign.center,
-                  style: AppTextStyles.body
-                      .copyWith(color: AppColors.textSecondary),
+                  style: AppTextStyles.body.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
                 ),
                 const SizedBox(height: AppSpacing.xl),
                 const AppSpinner(

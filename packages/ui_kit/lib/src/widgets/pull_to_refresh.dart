@@ -85,7 +85,8 @@ class _PullToRefreshState extends State<PullToRefresh>
           child: ListenableBuilder(
             listenable: Listenable.merge([_pull, _holdController]),
             builder: (context, _) {
-              final gap = _pull.value + _holdController.value * PullToRefresh._hold;
+              final gap =
+                  _pull.value + _holdController.value * PullToRefresh._hold;
               return Align(
                 alignment: Alignment.topCenter,
                 child: SizedBox(
@@ -111,8 +112,9 @@ class _PullToRefreshState extends State<PullToRefresh>
               SliverToBoxAdapter(
                 child: AnimatedBuilder(
                   animation: _holdController,
-                  builder: (_, _) =>
-                      SizedBox(height: _holdController.value * PullToRefresh._hold),
+                  builder: (_, _) => SizedBox(
+                    height: _holdController.value * PullToRefresh._hold,
+                  ),
                 ),
               ),
               SliverPadding(

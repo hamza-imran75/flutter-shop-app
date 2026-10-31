@@ -16,9 +16,9 @@ enum FakeScenario {
   final String description;
 
   static FakeScenario parse(String name) => FakeScenario.values.firstWhere(
-        (s) => s.name == name,
-        orElse: () => FakeScenario.normal,
-      );
+    (s) => s.name == name,
+    orElse: () => FakeScenario.normal,
+  );
 }
 
 class ScenarioController extends ValueNotifier<FakeScenario> {
@@ -31,7 +31,7 @@ class ScenarioController extends ValueNotifier<FakeScenario> {
 
 class FakeConnectivityStatus implements ConnectivityStatus {
   FakeConnectivityStatus(this._scenario)
-      : _online = ValueNotifier(_scenario.value != FakeScenario.offline) {
+    : _online = ValueNotifier(_scenario.value != FakeScenario.offline) {
     _scenario.addListener(_sync);
   }
 

@@ -12,10 +12,8 @@ class FadeSwitcher extends StatelessWidget {
       duration: const Duration(milliseconds: 260),
       switchInCurve: Curves.easeOut,
       switchOutCurve: Curves.easeIn,
-      layoutBuilder: (current, previous) => Stack(
-        fit: StackFit.expand,
-        children: [...previous, ?current],
-      ),
+      layoutBuilder: (current, previous) =>
+          Stack(fit: StackFit.expand, children: [...previous, ?current]),
       child: child,
     );
   }

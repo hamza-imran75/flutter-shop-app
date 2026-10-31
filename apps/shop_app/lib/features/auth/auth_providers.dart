@@ -5,11 +5,13 @@ import 'presentation/auth_controller.dart';
 import 'presentation/login_controller.dart';
 
 final authRepositoryProvider = Provider<AuthRepository>(
-  (ref) => throw UnimplementedError('authRepositoryProvider must be overridden'),
+  (ref) =>
+      throw UnimplementedError('authRepositoryProvider must be overridden'),
 );
 
 final authControllerProvider = Provider<AuthController>((ref) {
-  final controller = AuthController(ref.watch(authRepositoryProvider))..restore();
+  final controller = AuthController(ref.watch(authRepositoryProvider))
+    ..restore();
   ref.onDispose(controller.dispose);
   return controller;
 });
